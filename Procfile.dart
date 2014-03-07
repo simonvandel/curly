@@ -1,0 +1,1 @@
+web: /app/dart-sdk/bin/dart curvy.dart
