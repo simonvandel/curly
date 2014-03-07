@@ -2,3 +2,5 @@ name: Curvy
 description: A sample web application
 dependencies:
   browser: any
+  http_server: any
+  path: any

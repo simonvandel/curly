@@ -1,1 +1,1 @@
-web: /app/dart-sdk/bin/dart curvy.dart
+web: ./dart-sdk/bin/dart bin/basic_http_server.dart
