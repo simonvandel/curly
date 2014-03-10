@@ -12,8 +12,23 @@ h1, p {
   color: #333;
 }
 
-#gameArea {
+#gameContainer{
+  position: relative;
+}
+
+#gameContainer>canvas{
+  position: absolute;
+  margin-top: 100px;
+  left: 0px;
+}
+
+#background {
   background: #000000;
-  height: 281px;
-  width: 500px;
+  z-index: -2;
+  visibility: visible;
+}
+
+#players {
+  background: transparent;
+  z-index: -1;
 }

@@ -2,73 +2,78 @@ import 'dart:html';
 import "player.dart";
 import "dart:math";
 import 'keyboard_controller.dart';
+import "physics_controller.dart";
 
-Player player;
-CanvasElement canvas;
+CanvasElement backgroundCanvas;
+CanvasElement playersCanvas;
 CanvasRenderingContext2D canvasRender;
+CanvasRenderingContext2D playersCanvasContext;
 KeyboardController keyboardController;
+PhysicsController physicsController;
+num previousDelta = -1;
+List<Player> players = new List();
 
 void main() {
   
-  canvas = querySelector("#gameArea");
-//  window.onKeyDown.listen(handleInput);
-//  window.onKeyUp.listen(
-//      (KeyboardEvent e) {
-//    KeyEvent ke = new KeyEvent.wrap(e);
-//    print("up");
-//  }
-//  );
-//  
-//  window.onKeyDown.listen(
-//        (KeyboardEvent e) {
-//      KeyEvent ke = new KeyEvent.wrap(e);
-//      print("down");
-//    }
-//    );
+  backgroundCanvas = querySelector("#background");
+  backgroundCanvas..width = 500
+                  ..height = 500;
+  
+  playersCanvas = querySelector("#players");
+  playersCanvas..width = 500
+               ..height = 500;
+  playersCanvasContext = playersCanvas.context2D;
+
+  canvasRender = backgroundCanvas.context2D;
+  
+  
   keyboardController = new KeyboardController();
+  physicsController = new PhysicsController(players, canvasRender);
   
-  canvasRender = canvas.context2D;
+//  for(int i = 0; i< 80; i++){
+//    for(int j = 0; j< 80; j++){
+//    players.add(new Player("#${i*j*100}",new Point(i*5,j*5),2));
+//    }
+//  }
   
   
-  player = new Player("#FFFFFF", new Point(75, 75), 2);
+  Player player1 = new Player("#FFFFFF", new Point(playersCanvas.width /2, playersCanvas.height/2), 5);
+  Player player2 = new Player("#FFFF00", new Point(playersCanvas.width /3, playersCanvas.height/3), 5);
+  players.add(player1);
+  players.add(player2);
   
   gameLoop(0);
 }
 
 void gameLoop(num delta){
-  canvasRender.clearRect(0, 0, canvas.width, canvas.height);
+  // clear canvas
+  playersCanvasContext.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
+  //showFPS(canvasRender, delta - previousDelta);
+  previousDelta = delta;
   
+  physicsController.collisionCheck();
   
-  
-  player.draw(canvasRender);
-  player.move(0.01,0);
-  //print(keyboardController.isKeyPressed(KeyCode.LEFT));
-  if(keyboardController.isKeyPressed(KeyCode.LEFT)){
-    player.bearing += -2;
-  }
-  if(keyboardController.isKeyPressed(KeyCode.RIGHT)){
-      player.bearing += 2;
+  players.forEach((Player player){
+    player.draw(playersCanvasContext, canvasRender);
+    if(keyboardController.isKeyPressed(KeyCode.LEFT)){
+      player.bearing += -2;
     }
+    if(keyboardController.isKeyPressed(KeyCode.RIGHT)){
+        player.bearing += 2;
+      }
+    
+    
+  });
   
-  print("${player.p.x} ${player.p.y}");
   
-  //player.bearing++;
+  
+  
   window.animationFrame.then(gameLoop);
 }
 
-
-void handleInput(KeyboardEvent event) {
-  KeyEvent ke = new KeyEvent.wrap(event);
-  switch(ke.keyCode){
-    case KeyCode.LEFT:
-      player.bearing += -90;
-      //player.move(1, 1-cos(Utils.degToRad(80)));
-      break;
-    case KeyCode.RIGHT:
-      player.bearing += 90;
-      break;
-  }
-  
-  
+void showFPS(CanvasRenderingContext2D context, num timeTaken){
+  context..fillStyle = "#FFFFFF"
+         ..font = "20pt Helvetica"
+         ..fillText("${(1000 / timeTaken).round()}", backgroundCanvas.width * 0.90, backgroundCanvas.height * 0.05)
+         ..fill();
 }
-
