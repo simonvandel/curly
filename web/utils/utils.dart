@@ -1,4 +1,6 @@
+library test;
 import 'dart:math';
+
 
 class Utils{
   static num degToRad(num deg){

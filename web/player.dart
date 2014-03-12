@@ -17,85 +17,102 @@ class Player implements Drawable{
   bool hasNoLine = false;
   num radius;
   num bearing = 0;
-  num velocity = 2;
+  num oldBearing = -1;
+  num velocity = 1;
   List<PathPoint> path = new List<PathPoint>();
+  num dx = 0;
+  num dy = 0;
   
   Player(this.color, this.p, this.radius);
+  
+  void changeDirection(num diffDegrees){
+    oldBearing = bearing;
+    bearing += diffDegrees;
+  }
+  
+  void drawTail(CanvasRenderingContext2D tailsContext){
+    num test = sqrt(this.dx * this.dx + this.dy * this.dy);
+        
+        if(test  > this.radius*2 ){
+          
+         this.dx = 0;
+         this.dy = 0;
+          
+         //setup
+         tailsContext
+                ..lineJoin = "round"
+                ..strokeStyle = color;
+         
+        // draw trail      
+        tailsContext..beginPath();
+        
+        Iterable test = path.where((PathPoint pp) => pp != path.last);
+        
+        test.forEach(
+            (PathPoint pp) {
+                 tailsContext..lineTo(pp.x, pp.y)
+                        ..lineWidth = pp.radius;
+        } 
+        );
+        
+        tailsContext.stroke();
+          
+        }
+  }
  
   
   @override
   void draw(CanvasRenderingContext2D playersContext, CanvasRenderingContext2D tailsContext) {
-    //tailsContext.clearRect(0, 0, 500, 500);
-// calc new position
-    //playersContext.clearRect(p.x, p.y, this.radius, this.radius);
     this.p = calcNewPos();
     
- //setup
-         playersContext..fillStyle = color
-                ..lineJoin = "round"
-                ..strokeStyle = color;
-         
- //draw head
-         playersContext..beginPath()
-                ..arc(p.x, p.y, radius, 0, PI*2, false)
-                ..fill();
-         
-         
-         
-         tailsContext..fillStyle = color
-                         ..lineJoin = "round"
-                         ..strokeStyle = color
-                         ..beginPath()..arc(p.x, p.y, radius, 0, PI*2, false)
-                                      ..fill();
+// if direction change was made, add point to list
+if(oldBearing != bearing){
+path.add(new PathPoint(this.p, this.radius));
+}
     
-    color = "#FFFFFF"; // reset color back to white, in case it was changed in collision check
+    
+    
+       //setup
+       playersContext..fillStyle = color
+              ..lineJoin = "round"
+              ..strokeStyle = color;
+       
+       
+       
+       //draw head
+       playersContext..beginPath()
+              ..arc(p.x, p.y, radius, 0, PI*2, false)
+              ..closePath()
+              ..fill();
+       
+       // tegn trail forskudt
+       var rad = degToRad(bearing);
+       
+       playersContext..beginPath()
+                     ..fillStyle = "#00FFFF"
+                     //..rect(p.x + radius*cos(rad), p.y + radius*sin(rad), radius/2, radius/2)
+                     ..arc(p.x, p.y, radius, rad - PI/2, rad + PI/2, false)
+                     ..fill();
+       
+       
+       
+       
+       
+    
+    //color = "#FFFF00"; // reset color back to white, in case it was changed in collision check
+    
 
-//    // calc new position
-//    this.p = calcNewPos();
-//    Random r = new Random(new DateTime.now().millisecond);
-//    
-//    hasNoLine = r.nextInt(100) >= 80 ? true: false;
-//    
-//    // setup
-//         context..fillStyle = color
-//                ..lineJoin = "round"
-//                ..strokeStyle = color;
-//                
-//         // draw trail      
-//         context.beginPath();
-//         path.forEach(
-//             (PathPoint pp) {
-//                  context..lineTo(pp.x, pp.y)
-//                         ..lineWidth = pp.radius;
-//         } 
-//         );
-//         context.stroke();
-//         
-//         // draw head
-//         context..beginPath()
-//                ..arc(p.x, p.y, radius, 0, PI*2, false)
-//                ..fill();
-//    
-//    
-//    if(!hasNoLine){
-//      
-//    
-//
-//    path.add(new PathPoint(this.p,this.radius));
-//      
-//      
-//     
-//      
-//
-//    }else{
-//      
-//    }
   }
   
   
   calcNewPos(){
+    
     var rad = degToRad(bearing);
-    return new Point(p.x + cos(rad)*velocity, p.y + sin(rad)*velocity);
+    num newX = p.x + cos(rad)*velocity;
+    num newY = p.y + sin(rad)*velocity;
+    this.dx += (this.p.x - newX).abs();
+    this.dy += (this.p.y - newY).abs();
+    return new Point(newX, newY);
   }
   
  
