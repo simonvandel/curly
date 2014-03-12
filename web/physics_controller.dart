@@ -20,7 +20,7 @@ class PhysicsController{
       if(p.p.x - p.radius < 0 || p.p.x + p.radius > width || p.p.y - p.radius < 0 || p.p.y + p.radius > height){
         //  
         //print("collision!!");
-        p.color = "#FF0000";
+        p.color = "#FF0000"; 
       }
       
       var rad = Utils.degToRad(p.bearing);
