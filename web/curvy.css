@@ -14,21 +14,29 @@ h1, p {
 
 #gameContainer{
   position: relative;
+  margin: 0 auto;
+  width: 500px;
+  height: 500px;
 }
 
-#gameContainer>canvas{
+#gameContainer > canvas{
   position: absolute;
-  margin-top: 100px;
   left: 0px;
+  top: 0px;
 }
 
-#background {
+#tails {
   background: #000000;
-  z-index: -2;
+  z-index: -1;
   visibility: visible;
 }
 
 #players {
   background: transparent;
-  z-index: -1;
+  z-index: -0;
+}
+
+#powerups {
+  background: transparent;
+  z-index: -0;
 }
